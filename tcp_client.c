@@ -5,6 +5,9 @@
 #include <sys/socket.h>
 
 #include <netinet/in.h>
+#include <time.h>
+
+void waitFor (unsigned int secs);
 
 int main() {
 
@@ -50,9 +53,19 @@ int main() {
     send(network_socket, client_message, sizeof(client_message), 0);
 
     // and then close the socket
+    // close(network_socket);
+    //
+    waitFor(1);
+    
+    recv(network_socket, &server_response, sizeof(server_response), 0);
+    printf("The server1 sent the data: %s\n", server_response);
     close(network_socket);
 
     return 0;
 }
 
 
+void waitFor (unsigned int secs) {
+    unsigned int retTime = time(0) + secs;   // Get finishing time.
+    while (time(0) < retTime);               // Loop until it arrives.
+}

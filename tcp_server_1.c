@@ -53,7 +53,7 @@ int main() {
     }
 
     printf("The client's modified message is: %s\n", client_message);
-    close(server_socket);
+    //close(server_socket);
 
 
 
@@ -87,6 +87,9 @@ int main() {
     printf("The server2 sent the data: %s\n", server_response);
 
     close(network_socket);
+
+    send(client_socket, server_response, sizeof(server_response), 0);
+    close(server_socket);
 
 
 
