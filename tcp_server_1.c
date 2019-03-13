@@ -23,7 +23,7 @@ int main() {
     server_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
     // bind the socket to our specified IP and port
-    bind(server_socket, (struct sockadrr*) &server_address, sizeof(server_address));
+    bind(server_socket, (struct sockaddr*) &server_address, sizeof(server_address));
 
     // 2nd arg - backlog: how many connections can be waiting for this socket.
     // Set 5, bet doesn't matter
@@ -71,7 +71,7 @@ int main() {
     network_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
     // cast server_address to different structure
-    int connection_status = connect(network_socket, (struct sockadrr *) &network_address, sizeof(network_address));
+    int connection_status = connect(network_socket, (struct sockaddr *) &network_address, sizeof(network_address));
 
     if (connection_status == -1) {
         printf("There was an error making a connection to the remote socket \n\n");

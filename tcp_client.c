@@ -30,9 +30,9 @@ int main() {
     server_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
     // cast server_address to different structure
-    int connection_status = connect(network_socket, (struct sockadrr *) &server_address, sizeof(server_address));
+    int connection_status = connect(network_socket, (struct sockaddr *) &server_address, sizeof(server_address));
 
-    // check for error with the connetion
+    // check for error with the connection
     // 0 for no errors
     if (connection_status == -1) {
         printf("There was an error making a connection to the remote socket \n\n");
