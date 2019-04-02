@@ -67,7 +67,7 @@ int main() {
     bind(in_server_socket, (struct sockaddr*) &in_server_address, sizeof(in_server_address));
 
     // 2nd arg - backlog: how many connections can be waiting for this socket.
-    // Set 5, bet doesn't matter
+    // Set 5, but doesn't matter
     listen(in_server_socket, 5);
 
     int in_client_socket;

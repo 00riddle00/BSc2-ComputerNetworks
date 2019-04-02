@@ -5,6 +5,8 @@ cmake-build-debug
 tcp_client
 tcp_server_1
 tcp_server_2
+
+client
 servers
 
 
