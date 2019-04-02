@@ -10,7 +10,7 @@
 
 #include <netinet/in.h>
 
-void send_msg(int client_socket,  struct sockaddr_in server_address, char* sender_name, char* client_message);
+void send_msg(char* sender_name, char* client_message, int server_port);
 void waitFor (unsigned int secs);
 
 int main() {
@@ -71,43 +71,6 @@ int main() {
     printf("[%s] The client's modified message is: %s\n", in_server1_name, in_client1_message);
     close(in_server1_socket);
 
-    /* ----- ACT AS A CLIENT ------- */
-
-    // create a socket
-    int out_client1_socket;
-
-    // protocol = 0 (default: TCP)
-    out_client1_socket = socket(AF_INET, SOCK_STREAM, 0);
-
-    // specify an address for the socket
-    struct sockaddr_in out_server1_address;
-    out_server1_address.sin_family = AF_INET;
-
-    // convert integer to network byte order
-    out_server1_address.sin_port = htons(10010);
-
-    // sin_addr - a struct that contains another struct
-    out_server1_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-
-//    // cast server_address to different structure
-//    // _s1 = server first
-//    int connection_status_s1 = connect(out_client1_socket, (struct sockaddr *) &out_server1_address, sizeof(out_server1_address));
-//
-//    // check for error with the connection
-//    // 0 for no errors
-//    if (connection_status_s1 == -1) {
-//        printf("[%s] There was an error making a connection to the remote socket \n\n", in_server1_name);
-//    }
-//
-//    char out_client1_message[256];
-//    strcpy(out_client1_message, in_client1_message);
-//
-//    // send data to the server
-//    send(out_client1_socket, out_client1_message, sizeof(out_client1_message), 0);
-//
-//    // and then close the socket
-//    close(out_client1_socket);
-
     /* INTERMEDIARY SERVERS ------------------------------------------------------ */
 
 
@@ -143,14 +106,12 @@ int main() {
     printf("here21\n");
 
 
-    // ####################################################33
-    // ####################################################33
+    // ####################################################
 
-    send_msg(out_client1_socket, out_server1_address, in_server1_name, in_client1_message);
-    close(out_client1_socket);
+    send_msg(in_server1_name, in_client1_message, 10010);
 
-    // ####################################################33
-    // ####################################################33
+    // ####################################################
+
     in_clientL_socket = accept(in_serverL_socket, NULL, NULL);
     printf("here22\n");
 
@@ -225,7 +186,23 @@ int main() {
     return 0;
 }
 
-void send_msg(int client_socket,  struct sockaddr_in server_address, char* sender_name, char* client_message) {
+void send_msg(char* sender_name, char* client_message, int server_port) {
+
+    // create a socket
+    int client_socket;
+
+    // protocol = 0 (default: TCP)
+    client_socket = socket(AF_INET, SOCK_STREAM, 0);
+
+    // specify an address for the socket
+    struct sockaddr_in server_address;
+    server_address.sin_family = AF_INET;
+
+    // convert integer to network byte order
+    server_address.sin_port = htons(server_port);
+
+    // sin_addr - a struct that contains another struct
+    server_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
     // cast server_address to different structure
     int connection_status = connect(client_socket, (struct sockaddr *) &server_address, sizeof(server_address));
@@ -238,6 +215,8 @@ void send_msg(int client_socket,  struct sockaddr_in server_address, char* sende
     // send data to the server
     send(client_socket, client_message, sizeof(client_message), 0);
 
+    // and then close the socket
+    close(client_socket);
 }
 
 void waitFor (unsigned int secs) {
