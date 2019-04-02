@@ -83,28 +83,29 @@ int main() {
     out_server1_address.sin_family = AF_INET;
 
     // convert integer to network byte order
-    out_server1_address.sin_port = htons(10000);
+    out_server1_address.sin_port = htons(10010);
 
     // sin_addr - a struct that contains another struct
     out_server1_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
-    // cast server_address to different structure
-    int connection_status = connect(out_client1_socket, (struct sockaddr *) &out_server1_address, sizeof(out_server1_address));
-
-    // check for error with the connection
-    // 0 for no errors
-    if (connection_status == -1) {
-        printf("[%s] There was an error making a connection to the remote socket \n\n", in_server1_name);
-    }
-
-    char out_client1_message[256] = "hello";
-    strcpy(out_client1_message, in_client1_message);
-
-    // send data to the server
-    send(out_client1_socket, out_client1_message, sizeof(out_client1_message), 0);
-
-    // and then close the socket
-    close(out_client1_socket);
+//    // cast server_address to different structure
+//    // _s1 = server first
+//    int connection_status_s1 = connect(out_client1_socket, (struct sockaddr *) &out_server1_address, sizeof(out_server1_address));
+//
+//    // check for error with the connection
+//    // 0 for no errors
+//    if (connection_status_s1 == -1) {
+//        printf("[%s] There was an error making a connection to the remote socket \n\n", in_server1_name);
+//    }
+//
+//    char out_client1_message[256];
+//    strcpy(out_client1_message, in_client1_message);
+//
+//    // send data to the server
+//    send(out_client1_socket, out_client1_message, sizeof(out_client1_message), 0);
+//
+//    // and then close the socket
+//    close(out_client1_socket);
 
     /* INTERMEDIARY SERVERS ------------------------------------------------------ */
 
@@ -139,6 +140,31 @@ int main() {
     // 2nd param - struct that contains address of the client connection,
     // 3rd - sizeof it. We'll leave it at NULL
     printf("here21\n");
+
+
+    // ####################################################33
+
+    // cast server_address to different structure
+    // _s1 = server first
+    int connection_status_s1 = connect(out_client1_socket, (struct sockaddr *) &out_server1_address, sizeof(out_server1_address));
+
+    // check for error with the connection
+    // 0 for no errors
+    if (connection_status_s1 == -1) {
+        printf("[%s] There was an error making a connection to the remote socket \n\n", in_server1_name);
+    }
+
+    char out_client1_message[256] = "hello";
+    strcpy(out_client1_message, in_client1_message);
+
+    // send data to the server
+    send(out_client1_socket, out_client1_message, sizeof(out_client1_message), 0);
+
+    // and then close the socket
+    close(out_client1_socket);
+
+
+    // ####################################################33
     in_clientL_socket = accept(in_serverL_socket, NULL, NULL);
     printf("here22\n");
 
@@ -172,12 +198,40 @@ int main() {
 
     /* ----- ACT AS A CLIENT ------- */
 
-    // TODO
+    // create a socket
+    int out_clientL_socket;
 
+    // protocol = 0 (default: TCP)
+    out_clientL_socket = socket(AF_INET, SOCK_STREAM, 0);
 
+    // specify an address for the socket
+    struct sockaddr_in out_serverL_address;
+    out_serverL_address.sin_family = AF_INET;
 
+    // convert integer to network byte order
+    out_serverL_address.sin_port = htons(10000);
 
+    // sin_addr - a struct that contains another struct
+    out_serverL_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
+    // cast server_address to different structure
+    // _sL = server last
+    int connection_status_sL = connect(out_clientL_socket, (struct sockaddr *) &out_serverL_address, sizeof(out_serverL_address));
+
+    // check for error with the connection
+    // 0 for no errors
+    if (connection_status_sL == -1) {
+        printf("[%s] There was an error making a connection to the remote socket \n\n", in_server1_name);
+    }
+
+    char out_clientL_message[256];
+    strcpy(out_clientL_message, modified_in_clientL_message);
+
+    // send data to the server
+    send(out_clientL_socket, out_clientL_message, sizeof(out_clientL_message), 0);
+
+    // and then close the socket
+    close(out_clientL_socket);
 
 
     /* -------------------------------------------------------------------- */
