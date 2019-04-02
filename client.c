@@ -6,9 +6,6 @@
 #include <sys/socket.h>
 
 #include <netinet/in.h>
-#include <time.h>
-
-void waitFor (unsigned int secs);
 
 int main() {
 
@@ -95,8 +92,3 @@ int main() {
     return 0;
 }
 
-
-void waitFor (unsigned int secs) {
-    unsigned int retTime = time(0) + secs;   // Get finishing time.
-    while (time(0) < retTime);               // Loop until it arrives.
-}
