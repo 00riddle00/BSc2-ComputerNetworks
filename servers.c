@@ -37,32 +37,34 @@ int main() {
 
     // 2nd arg - backlog: how many connections can be waiting for this socket.
     // Set 5, but doesn't matter
-
     listen(server1_socket, 5);
 
     int client1_socket;
     // 2nd param - struct that contains address of the client connection,
     // 3rd - sizeof it. We'll leave it at NULL
     // DOES NOT PROCEED FURTHER UNTIL IT GETS A CONNECTION
-    printf("here0\n");
     client1_socket = accept(server1_socket, NULL, NULL);
-    printf("here1\n");
 
     // print the welcoming message
     printf("[%s] %s%s!\n", server1_name, welcome_msg, server1_name);
 
     // receive data from the client
     char client1_message[256];
+    char hop_count[256];
     recv(client1_socket, &client1_message, sizeof(client1_message), 0);
+    recv(client1_socket, &hop_count, sizeof(hop_count), 0);
 
     // print out the client's msg
     printf("[%s] The client's message is: %s\n", server1_name, client1_message);
+    printf("[%s] The hop count selected is %s\n", server1_name, hop_count);
+
+    int hops = atoi(hop_count);
 
 	// convert client msg to upper case
-	int i = 0;
-    while(client1_message[i]) {
-      client1_message[i] = toupper(client1_message[i]);
-      i++;
+	int a = 0;
+    while(client1_message[a]) {
+      client1_message[a] = toupper(client1_message[a]);
+      a++;
     }
 
     printf("[%s] The client's modified message is: %s\n", server1_name, client1_message);
@@ -73,7 +75,7 @@ int main() {
 
     /* INTERMEDIARY SERVERS ------------------------------------------------------ */
 
-    for (i = 2; i <= 10; i++) {
+    for (int i = 2; i <= 2+hops; i++) {
 
         char server_current_name[256] = "server0";
         char server_prev_name[256] = "server0";
@@ -98,18 +100,14 @@ int main() {
         listen(server_socket, 5);
 
         int client_socket;
+
+        // ############## send the message from previous server  ####################
+        send_msg(server_prev_name, client1_message, 10000+i);
+        // ###########################################################################
+
         // 2nd param - struct that contains address of the client connection,
         // 3rd - sizeof it. We'll leave it at NULL
-        printf("here21\n");
-
-        // ####################################################
-
-        send_msg(server_prev_name, client1_message, 10000+i);
-
-        // ####################################################
-
         client_socket = accept(server_socket, NULL, NULL);
-        printf("here22\n");
 
         // print the welcoming message
         printf("[%s] %s%s!\n", server_current_name, welcome_msg, server_current_name);
@@ -121,10 +119,10 @@ int main() {
         // print out the client's msg
         printf("[%s] The received client's message is: %s\n", server_current_name, client1_message);
 
-        if (i == 10) {
+        if (i == 2+hops) {
 
             char modified_client1_message[256];
-            // convert client
+            // convert client message
             int j = 0;
             int k = 0;
             while(client1_message[j]) {
@@ -143,6 +141,8 @@ int main() {
     return 0;
 }
 
+// create a client socket, connect it to server socket with given server_port, send the message,
+// and close the client socket
 void send_msg(char* sender_name, char* client_message, int server_port) {
 
     // create a socket

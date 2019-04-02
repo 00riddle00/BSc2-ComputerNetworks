@@ -12,6 +12,20 @@ int main() {
     char welcome_msg[256] = "You have reached the ";
     char server_name[256] = "client-server";
 
+    int hops;
+
+    while (1) {
+        printf("[Enter the number of hops to traverse]> ");
+        if (scanf("%d", &hops) != 1) {
+            fprintf(stderr, "Invalid input\n");
+            return 1;
+        } else if (hops < 0 || hops > 9) {
+            printf("The number is out of bounds. Try again.\n");
+            continue;
+        }
+        break;
+    }
+
     /* ----- ACT AS A CLIENT --------------------------------------------------- */
 
     // create a socket
@@ -41,8 +55,12 @@ int main() {
 
     char out_client_message[256] = "hello";
 
+    char hops_to_string[2];
+    sprintf(hops_to_string, "%d", hops);
+
     // send data to the server
     send(out_client_socket, out_client_message, sizeof(out_client_message), 0);
+    send(out_client_socket, hops_to_string, sizeof(out_client_message), 0);
 
     // and then close the socket
     close(out_client_socket);
@@ -71,9 +89,7 @@ int main() {
     int in_client_socket;
     // 2nd param - struct that contains address of the client connection,
     // 3rd - sizeof it. We'll leave it at NULL
-    printf("[0]here0\n");
     in_client_socket = accept(in_server_socket, NULL, NULL);
-    printf("[0]here1\n");
 
     // print the welcoming message
     printf("[%s] %s%s!\n", server_name, welcome_msg, server_name);
