@@ -13,7 +13,7 @@ void waitFor (unsigned int secs);
 int main() {
 
     char welcome_msg[256] = "You have reached the ";
-    char name[256] = "client-server";
+    char server_name[256] = "client-server";
 
     /* ----- ACT AS A CLIENT --------------------------------------------------- */
 
@@ -39,7 +39,7 @@ int main() {
     // check for error with the connection
     // 0 for no errors
     if (connection_status == -1) {
-        printf("[%s] There was an error making a connection to the remote socket \n\n", name);
+        printf("[%s] There was an error making a connection to the remote socket \n\n", server_name);
     }
 
     char out_client_message[256] = "hello";
@@ -79,14 +79,14 @@ int main() {
     printf("[0]here1\n");
 
     // print the welcoming message
-    printf("[%s] %s%s!\n", name, welcome_msg, name);
+    printf("[%s] %s%s!\n", server_name, welcome_msg, server_name);
 
     // receive data from the client
     char in_client_message[256];
     recv(in_client_socket, &in_client_message, sizeof(in_client_message), 0);
 
     // print out the client's msg, which is the original message modified
-    printf("[%s] The modified message that reached the client: %s\n", name, in_client_message);
+    printf("[%s] The modified message that reached the client: %s\n", server_name, in_client_message);
 
     close(in_server_socket);
 
