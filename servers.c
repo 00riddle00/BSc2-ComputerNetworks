@@ -17,7 +17,6 @@ int main() {
 
     // global vars
     char welcome_msg[256] = "You have reached the ";
-    int i,j;
 
     /* SERVER FIRST ------------------------------------------------------------- */
 
@@ -62,7 +61,7 @@ int main() {
     printf("[%s] The client's message is: %s\n", server1_name, in_client1_message);
 
 	// convert client msg to upper case
-	i = 0;
+	int i = 0;
     while(in_client1_message[i]) {
       in_client1_message[i] = toupper(in_client1_message[i]);
       i++;
@@ -76,134 +75,72 @@ int main() {
 
     /* INTERMEDIARY SERVERS ------------------------------------------------------ */
 
-    // server2 = server mid
-    char server2_name[256] = "server MID";
+    for (i = 2; i <= 10; i++) {
 
-    // create the server socket
-    int in_server2_socket;
-    in_server2_socket = socket(AF_INET, SOCK_STREAM, 0);
+        char server_current_name[256] = "server0";
+        char server_prev_name[256] = "server0";
+        sprintf(server_current_name, "%s%d", server_current_name, (char)i);
+        sprintf(server_prev_name, "%s%d", server_prev_name, (char)i-1);
 
-    // define the server address
-    struct sockaddr_in in_server2_address;
-    in_server2_address.sin_family = AF_INET;
-    in_server2_address.sin_port = htons(10002);
-    in_server2_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+        // create the server socket
+        int server_socket;
+        server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
-    // bind the socket to our specified IP and port
-    bind(in_server2_socket, (struct sockaddr*) &in_server2_address, sizeof(in_server2_address));
+        // define the server address
+        struct sockaddr_in in_server_address;
+        in_server_address.sin_family = AF_INET;
+        in_server_address.sin_port = htons(10000+i);
+        in_server_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
-    // 2nd arg - backlog: how many connections can be waiting for this socket.
-    // Set 5, bet doesn't matter
-    listen(in_server2_socket, 5);
+        // bind the socket to our specified IP and port
+        bind(server_socket, (struct sockaddr*) &in_server_address, sizeof(in_server_address));
 
-    // in_client2 = client last
-    int in_client2_socket;
-    // 2nd param - struct that contains address of the client connection,
-    // 3rd - sizeof it. We'll leave it at NULL
-    printf("here21\n");
+        // 2nd arg - backlog: how many connections can be waiting for this socket.
+        // Set 5, bet doesn't matter
+        listen(server_socket, 5);
 
-    // ####################################################
+        int client_socket;
+        // 2nd param - struct that contains address of the client connection,
+        // 3rd - sizeof it. We'll leave it at NULL
+        printf("here21\n");
 
-    send_msg(server1_name, in_client1_message, 10002);
+        // ####################################################
 
-    // ####################################################
+        send_msg(server_prev_name, in_client1_message, 10000+i);
 
-    in_client2_socket = accept(in_server2_socket, NULL, NULL);
-    printf("here22\n");
+        // ####################################################
 
-    // print the welcoming message
-    printf("[%s] %s%s!\n", server2_name, welcome_msg, server2_name);
+        client_socket = accept(server_socket, NULL, NULL);
+        printf("here22\n");
 
-    // receive data from the client
-    char in_client2_message[256];
-    recv(in_client2_socket, &in_client2_message, sizeof(in_client2_message), 0);
+        // print the welcoming message
+        printf("[%s] %s%s!\n", server_current_name, welcome_msg, server_current_name);
 
+        // receive data from the client
+        char in_client2_message[256];
+        recv(client_socket, &in_client2_message, sizeof(in_client2_message), 0);
 
-    // print out the client's msg
-    printf("[%s] The received client's message is: %s\n", server2_name, in_client2_message);
+        // print out the client's msg
+        printf("[%s] The received client's message is: %s\n", server_current_name, in_client1_message);
 
-    close(in_server2_socket);
+        if (i == 10) {
 
-    /* -------------------------------------------------------------------- */
+            char modified_in_clientL_message[256];
+            // convert client
+            int j = 0;
+            int k = 0;
+            while(in_client1_message[j]) {
+                modified_in_clientL_message[k++] = in_client1_message[j];
+                modified_in_clientL_message[k++] = in_client1_message[j++];
+            }
 
+            printf("[%s] The client's modified message is: %s\n", server_current_name, modified_in_clientL_message);
 
+            send_msg(server_current_name, modified_in_clientL_message, 10000);
+        }
 
-
-
-
-    /* SERVER LAST ------------------------------------------------------------- */
-
-    /* ----- ACT AS A SERVER ------- */
-
-    // serverL = server last
-    char serverL_name[256] = "server LAST";
-
-    // create the server socket
-    int in_serverL_socket;
-    in_serverL_socket = socket(AF_INET, SOCK_STREAM, 0);
-
-    // define the server address
-    struct sockaddr_in in_serverL_address;
-    in_serverL_address.sin_family = AF_INET;
-    in_serverL_address.sin_port = htons(10010);
-    in_serverL_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-
-    // bind the socket to our specified IP and port
-    bind(in_serverL_socket, (struct sockaddr*) &in_serverL_address, sizeof(in_serverL_address));
-
-    // 2nd arg - backlog: how many connections can be waiting for this socket.
-    // Set 5, bet doesn't matter
-    listen(in_serverL_socket, 5);
-
-    // in_clientL = client last
-    int in_clientL_socket;
-    // 2nd param - struct that contains address of the client connection,
-    // 3rd - sizeof it. We'll leave it at NULL
-    printf("here21\n");
-
-
-    // ####################################################
-
-    send_msg(server2_name, in_client2_message, 10010);
-
-    // ####################################################
-
-    in_clientL_socket = accept(in_serverL_socket, NULL, NULL);
-    printf("here22\n");
-
-    // print the welcoming message
-    printf("[%s] %s%s [Last one]!\n", serverL_name, welcome_msg, serverL_name);
-
-
-
-
-    // receive data from the client
-    char in_clientL_message[256];
-    recv(in_clientL_socket, &in_clientL_message, sizeof(in_clientL_message), 0);
-
-
-
-    // print out the client's msg
-    printf("[%s] The received client's message is: %s\n", serverL_name, in_clientL_message);
-
-    char modified_in_clientL_message[256];
-	// convert client
-    i = 0;
-    j = 0;
-    while(in_clientL_message[i]) {
-      modified_in_clientL_message[j++] = in_clientL_message[i];
-      modified_in_clientL_message[j++] = in_clientL_message[i++];
+        close(server_socket);
     }
-
-    printf("[%s] The client's modified message is: %s\n", serverL_name, modified_in_clientL_message);
-
-    close(in_serverL_socket);
-
-    /* ----- ACT AS A CLIENT ------- */
-
-    send_msg(serverL_name, modified_in_clientL_message, 10000);
-
-    /* -------------------------------------------------------------------- */
 
     return 0;
 }
