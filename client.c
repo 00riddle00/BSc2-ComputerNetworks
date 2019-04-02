@@ -52,7 +52,7 @@ int main() {
 
     /* ----- ACT AS A SERVER --------------------------------------------------- */
 
-    waitFor(1);
+//    waitFor(1);
 
     // create the server socket
     int in_server_socket;
@@ -74,7 +74,9 @@ int main() {
     int in_client_socket;
     // 2nd param - struct that contains address of the client connection,
     // 3rd - sizeof it. We'll leave it at NULL
+    printf("[0]here0\n");
     in_client_socket = accept(in_server_socket, NULL, NULL);
+    printf("[0]here1\n");
 
     // print the welcoming message
     printf("[%s] %s%s!\n", name, welcome_msg, name);
