@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> // for close
+#include <string.h>
 #include <unistd.h> // for close
 
 #include <sys/types.h>
@@ -10,12 +10,19 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
+#define MAX_STR_LENGTH 256
+
 int main() {
 
-    char welcome_msg[256] = "You have reached the ";
-    char server_name[256] = "client-server";
 
+    char welcome_msg[MAX_STR_LENGTH] = "You have reached the ";
+    char server_name[MAX_STR_LENGTH] = "client-server";
+
+    char host_ip[MAX_STR_LENGTH];
     int hops;
+
+    printf("[Enter the ip of the host]> ");
+    scanf("%s", host_ip);
 
     while (1) {
         printf("[Enter the number of hops to traverse]> ");
@@ -46,7 +53,7 @@ int main() {
     // create a socket
     int out_client_socket;
 
-    getaddrinfo("::1", "10001", &hints, &res);
+    getaddrinfo(host_ip, "10001", &hints, &res);
 
     // protocol = 0 (default: TCP)
     out_client_socket = socket(res->ai_family, res->ai_socktype, 0);
@@ -60,7 +67,7 @@ int main() {
         printf("[%s] There was an error making a connection to the remote socket \n\n", server_name);
     }
 
-    char out_client_message[256] = "hello";
+    char out_client_message[MAX_STR_LENGTH] = "hello";
 
     char hops_to_string[2];
     sprintf(hops_to_string, "%d", hops);
@@ -77,7 +84,7 @@ int main() {
     // create the server socket
     int in_server_socket;
 
-    getaddrinfo("::1", "10000", &hints, &res);
+    getaddrinfo(host_ip, "10000", &hints, &res);
 
     in_server_socket = socket(res->ai_family, res->ai_socktype, 0);
 
@@ -97,7 +104,7 @@ int main() {
     printf("[%s] %s%s!\n", server_name, welcome_msg, server_name);
 
     // receive data from the client
-    char in_client_message[256];
+    char in_client_message[MAX_STR_LENGTH];
     recv(in_client_socket, &in_client_message, sizeof(in_client_message), 0);
 
     // print out the client's msg, which is the original message modified
