@@ -98,7 +98,8 @@ int main() {
 
     /* INTERMEDIARY SERVERS ------------------------------------------------------ */
 
-    char current_port[MAX_STR_LENGTH] = "2000";
+    // same as server1_port
+    char current_port[MAX_STR_LENGTH] = "20001";
 
     for (int i = 2; i <= 2+hops; i++) {
 
@@ -111,6 +112,7 @@ int main() {
         int server_socket;
 
         // increment port number by i
+        current_port[strlen(current_port)-1] = '\0';
         sprintf(current_port, "%s%d", current_port, (char)i);
 
         getaddrinfo(HOST_IP, current_port, &hints, &res);
