@@ -32,19 +32,20 @@ int main() {
 
     char welcome_msg[MAX_STR_LENGTH] = "You have reached the ";
 
-//    char host_ip[MAX_STR_LENGTH] = "::1";
-    char host_ip[MAX_STR_LENGTH] = "127.0.0.1";
+    char host_ip[MAX_STR_LENGTH] = "::1";
+//    char host_ip[MAX_STR_LENGTH] = "127.0.0.1";
 
     /* FIRST SERVER ------------------------------------------------------------- */
 
     /* ----- ACT AS A SERVER ------- */
 
     char server1_name[MAX_STR_LENGTH] = "server01";
+    char server1_ip[MAX_STR_LENGTH] = "20001";
 
     // create the server socket
     int server1_socket;
 
-    getaddrinfo(host_ip, "10001", &hints, &res);
+    getaddrinfo(host_ip, server1_ip, &hints, &res);
 
     // protocol = 0 (default: TCP)
     server1_socket = socket(res->ai_family, res->ai_socktype, 0);
@@ -60,7 +61,15 @@ int main() {
     // 2nd param - struct that contains address of the client connection,
     // 3rd - sizeof it. We'll leave it at NULL
     // DOES NOT PROCEED FURTHER UNTIL IT GETS A CONNECTION
-    client1_socket = accept(server1_socket, NULL, NULL);
+
+
+    struct sockaddr_storage their_addr;
+    socklen_t addr_size;
+
+    addr_size = sizeof their_addr;
+
+    client1_socket = accept(server1_socket, (struct sockaddr *)&their_addr, &addr_size);
+//    client1_socket = accept(server1_socket, NULL, NULL);
 
     // print the welcoming message
     printf("[%s] %s%s!\n", server1_name, welcome_msg, server1_name);
@@ -90,7 +99,7 @@ int main() {
 
     /* INTERMEDIARY SERVERS ------------------------------------------------------ */
 
-    char tmp[MAX_STR_LENGTH] = "1000";
+    char tmp[MAX_STR_LENGTH] = "2000";
 
     for (int i = 2; i <= 2+hops; i++) {
 
@@ -102,11 +111,10 @@ int main() {
         // create the server socket
         int server_socket;
 
+        // increment port number by i
         sprintf(tmp, "%s%d", tmp, (char)i);
 
-//        getaddrinfo(host_ip, "10000", &hints, &res);
         getaddrinfo(host_ip, tmp, &hints, &res);
-//        server_address.sin6_port = htons(10000+i);
 
         server_socket = socket(res->ai_family, res->ai_socktype, 0);
 
@@ -121,7 +129,6 @@ int main() {
 
         // ############## send the message from previous server  ####################
         send_msg(server_prev_name, client1_message, tmp);
-//        send_msg(server_prev_name, client1_message, 10000+i);
         // ###########################################################################
 
         // 2nd param - struct that contains address of the client connection,
@@ -182,7 +189,8 @@ void send_msg(char* sender_name, char* client_message, char* server_port) {
     // create a socket
     int client_socket;
 
-    getaddrinfo("127.0.0.1", server_port, &hints, &res);
+//    getaddrinfo("127.0.0.1", server_port, &hints, &res);
+    getaddrinfo("::1", server_port, &hints, &res);
 
     // protocol = 0 (default: TCP)
     client_socket = socket(res->ai_family, res->ai_socktype, 0);

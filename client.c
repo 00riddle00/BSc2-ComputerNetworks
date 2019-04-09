@@ -48,12 +48,18 @@ int main() {
     hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
     hints.ai_socktype = SOCK_STREAM;
 
+
     /* ----- ACT AS A CLIENT --------------------------------------------------- */
+
+    // port of the server to send data to
+    char out_server_port[MAX_STR_LENGTH] = "20001";
 
     // create a socket
     int out_client_socket;
 
-    getaddrinfo(host_ip, "10001", &hints, &res);
+    // you now have the function getaddrinfo() that does all kinds of good stuff for you,
+    // including DNS and service name lookups, and fills out the structs you need, besides!
+    getaddrinfo(host_ip, out_server_port, &hints, &res);
 
     // protocol = 0 (default: TCP)
     out_client_socket = socket(res->ai_family, res->ai_socktype, 0);
@@ -81,10 +87,13 @@ int main() {
 
     /* ----- ACT AS A SERVER --------------------------------------------------- */
 
+    // port of this server
+    char in_server_port[MAX_STR_LENGTH] = "10000";
+
     // create the server socket
     int in_server_socket;
 
-    getaddrinfo(host_ip, "10000", &hints, &res);
+    getaddrinfo(host_ip, in_server_port, &hints, &res);
 
     in_server_socket = socket(res->ai_family, res->ai_socktype, 0);
 
