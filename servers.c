@@ -14,7 +14,7 @@
 
 #define MAX_STR_LENGTH 256
 
-void send_msg(char* sender_name, char* client_message, int server_port);
+void send_msg(char* sender_name, char* client_message, char* server_port);
 
 int main() {
 
@@ -32,7 +32,8 @@ int main() {
 
     char welcome_msg[MAX_STR_LENGTH] = "You have reached the ";
 
-    char host_ip[MAX_STR_LENGTH] = "::1";
+//    char host_ip[MAX_STR_LENGTH] = "::1";
+    char host_ip[MAX_STR_LENGTH] = "127.0.0.1";
 
     /* FIRST SERVER ------------------------------------------------------------- */
 
@@ -89,6 +90,8 @@ int main() {
 
     /* INTERMEDIARY SERVERS ------------------------------------------------------ */
 
+    char tmp[MAX_STR_LENGTH] = "1000";
+
     for (int i = 2; i <= 2+hops; i++) {
 
         char server_current_name[MAX_STR_LENGTH] = "server0";
@@ -98,16 +101,17 @@ int main() {
 
         // create the server socket
         int server_socket;
-        server_socket = socket(AF_INET6, SOCK_STREAM, 0);
 
-        // define the server address
-        struct sockaddr_in6 server_address;
-        server_address.sin6_family = AF_INET6;
-        server_address.sin6_port = htons(10000+i);
-        server_address.sin6_addr = in6addr_loopback;
+        sprintf(tmp, "%s%d", tmp, (char)i);
+
+//        getaddrinfo(host_ip, "10000", &hints, &res);
+        getaddrinfo(host_ip, tmp, &hints, &res);
+//        server_address.sin6_port = htons(10000+i);
+
+        server_socket = socket(res->ai_family, res->ai_socktype, 0);
 
         // bind the socket to our specified IP and port
-        bind(server_socket, (struct sockaddr*) &server_address, sizeof(server_address));
+        bind(server_socket, res->ai_addr, res->ai_addrlen);
 
         // 2nd arg - backlog: how many connections can be waiting for this socket.
         // Set 5, but doesn't matter
@@ -116,7 +120,8 @@ int main() {
         int client_socket;
 
         // ############## send the message from previous server  ####################
-        send_msg(server_prev_name, client1_message, 10000+i);
+        send_msg(server_prev_name, client1_message, tmp);
+//        send_msg(server_prev_name, client1_message, 10000+i);
         // ###########################################################################
 
         // 2nd param - struct that contains address of the client connection,
@@ -146,7 +151,7 @@ int main() {
 
             printf("[%s] The client's modified message is: %s\n", server_current_name, modified_client1_message);
 
-            send_msg(server_current_name, modified_client1_message, 10000);
+            send_msg(server_current_name, modified_client1_message, "10000");
         }
 
         close(server_socket);
@@ -158,26 +163,32 @@ int main() {
 
 // create a client socket, connect it to server socket with given server_port, send the message,
 // and close the client socket
-void send_msg(char* sender_name, char* client_message, int server_port) {
+void send_msg(char* sender_name, char* client_message, char* server_port) {
+
+    /* ----- SETUP ---------*/
+
+    // vars which will be params for getaddrinfo()
+    struct addrinfo hints;
+    struct addrinfo *res; // will point to the results
+
+    // first, load up address structs with getaddrinfo():
+    memset(&hints, 0, sizeof hints);
+
+    hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
+    hints.ai_socktype = SOCK_STREAM;
+
+    /* ---------------------*/
 
     // create a socket
     int client_socket;
 
+    getaddrinfo("127.0.0.1", server_port, &hints, &res);
+
     // protocol = 0 (default: TCP)
-    client_socket = socket(AF_INET6, SOCK_STREAM, 0);
+    client_socket = socket(res->ai_family, res->ai_socktype, 0);
 
-    // specify an address for the socket
-    struct sockaddr_in6 server_address;
-    server_address.sin6_family = AF_INET6;
-
-    // convert integer to network byte order
-    server_address.sin6_port = htons(server_port);
-
-    // sin6_addr - a struct that contains another struct
-    server_address.sin6_addr = in6addr_loopback;
-
-    // cast server_address to different structure
-    int connection_status = connect(client_socket, (struct sockaddr *) &server_address, sizeof(server_address));
+    // connect
+    int connection_status = connect(client_socket, res->ai_addr, res->ai_addrlen);
 
     // check for error with the connection
     // 0 for no errors
