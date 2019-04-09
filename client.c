@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h> // for close
 #include <unistd.h> // for close
 
 #include <sys/types.h>
@@ -7,6 +8,7 @@
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 
 int main() {
 
@@ -27,26 +29,30 @@ int main() {
         break;
     }
 
+    /* ----- SETUP ---------*/
+
+    // vars which will be params for getaddrinfo()
+    struct addrinfo hints;
+    struct addrinfo *res; // will point to the results
+
+    // first, load up address structs with getaddrinfo():
+    memset(&hints, 0, sizeof hints);
+
+    hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
+    hints.ai_socktype = SOCK_STREAM;
+
     /* ----- ACT AS A CLIENT --------------------------------------------------- */
 
     // create a socket
     int out_client_socket;
 
+    getaddrinfo("::1", "10001", &hints, &res);
+
     // protocol = 0 (default: TCP)
-    out_client_socket = socket(AF_INET6, SOCK_STREAM, 0);
+    out_client_socket = socket(res->ai_family, res->ai_socktype, 0);
 
-    // specify an address for the socket
-    struct sockaddr_in6 out_server_address;
-    out_server_address.sin6_family = AF_INET6;
-
-    // convert integer to network byte order
-    out_server_address.sin6_port = htons(10001);
-
-    // sin6_addr - a struct that contains another struct
-    out_server_address.sin6_addr = in6addr_loopback;
-
-    // cast server_address to different structure
-    int connection_status = connect(out_client_socket, (struct sockaddr *) &out_server_address, sizeof(out_server_address));
+    // connect
+    int connection_status = connect(out_client_socket, res->ai_addr, res->ai_addrlen);
 
     // check for error with the connection
     // 0 for no errors
@@ -68,20 +74,15 @@ int main() {
 
     /* ----- ACT AS A SERVER --------------------------------------------------- */
 
-//    waitFor(1);
-
     // create the server socket
     int in_server_socket;
-    in_server_socket = socket(AF_INET6, SOCK_STREAM, 0);
 
-    // define the server address
-    struct sockaddr_in6 in_server_address;
-    in_server_address.sin6_family = AF_INET6;
-    in_server_address.sin6_port = htons(10000);
-    in_server_address.sin6_addr = in6addr_loopback;
+    getaddrinfo("::1", "10000", &hints, &res);
+
+    in_server_socket = socket(res->ai_family, res->ai_socktype, 0);
 
     // bind the socket to our specified IP and port
-    bind(in_server_socket, (struct sockaddr*) &in_server_address, sizeof(in_server_address));
+    bind(in_server_socket, res->ai_addr, res->ai_addrlen);
 
     // 2nd arg - backlog: how many connections can be waiting for this socket.
     // Set 5, but doesn't matter
