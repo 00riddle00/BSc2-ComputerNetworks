@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 void send_msg(char* sender_name, char* client_message, int server_port);
 
@@ -24,13 +25,13 @@ int main() {
 
     // create the server socket
     int server1_socket;
-    server1_socket = socket(AF_INET, SOCK_STREAM, 0);
+    server1_socket = socket(AF_INET6, SOCK_STREAM, 0);
 
     // define the server address
-    struct sockaddr_in server1_address;
-    server1_address.sin_family = AF_INET;
-    server1_address.sin_port = htons(10001);
-    server1_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    struct sockaddr_in6 server1_address;
+    server1_address.sin6_family = AF_INET6;
+    server1_address.sin6_port = htons(10001);
+    server1_address.sin6_addr = in6addr_loopback;
 
     // bind the socket to our specified IP and port
     bind(server1_socket, (struct sockaddr*) &server1_address, sizeof(server1_address));
@@ -84,13 +85,13 @@ int main() {
 
         // create the server socket
         int server_socket;
-        server_socket = socket(AF_INET, SOCK_STREAM, 0);
+        server_socket = socket(AF_INET6, SOCK_STREAM, 0);
 
         // define the server address
-        struct sockaddr_in server_address;
-        server_address.sin_family = AF_INET;
-        server_address.sin_port = htons(10000+i);
-        server_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+        struct sockaddr_in6 server_address;
+        server_address.sin6_family = AF_INET6;
+        server_address.sin6_port = htons(10000+i);
+        server_address.sin6_addr = in6addr_loopback;
 
         // bind the socket to our specified IP and port
         bind(server_socket, (struct sockaddr*) &server_address, sizeof(server_address));
@@ -150,17 +151,17 @@ void send_msg(char* sender_name, char* client_message, int server_port) {
     int client_socket;
 
     // protocol = 0 (default: TCP)
-    client_socket = socket(AF_INET, SOCK_STREAM, 0);
+    client_socket = socket(AF_INET6, SOCK_STREAM, 0);
 
     // specify an address for the socket
-    struct sockaddr_in server_address;
-    server_address.sin_family = AF_INET;
+    struct sockaddr_in6 server_address;
+    server_address.sin6_family = AF_INET6;
 
     // convert integer to network byte order
-    server_address.sin_port = htons(server_port);
+    server_address.sin6_port = htons(server_port);
 
-    // sin_addr - a struct that contains another struct
-    server_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    // sin6_addr - a struct that contains another struct
+    server_address.sin6_addr = in6addr_loopback;
 
     // cast server_address to different structure
     int connection_status = connect(client_socket, (struct sockaddr *) &server_address, sizeof(server_address));
