@@ -14,7 +14,6 @@
 
 int main() {
 
-
     char welcome_msg[MAX_STR_LENGTH] = "You have reached the ";
     char server_name[MAX_STR_LENGTH] = "client-server";
 
