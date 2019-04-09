@@ -14,7 +14,8 @@
 
 #define MAX_STR_LENGTH 256
 
-const char HOST_IP[] = "::1";
+const char HOST_IP[] = "127.0.0.1";
+//const char HOST_IP[] = "::1";
 const char CLIENT_PORT[]= "10000";
 
 void send_msg(char* sender_name, char* client_message, char* server_port);

@@ -12,19 +12,22 @@
 
 #define MAX_STR_LENGTH 256
 
+const char HOST_IP[] = "127.0.0.1";
+//const char HOST_IP[] = "::1";
+const char THIS_PORT[]= "10000";
+
 int main() {
 
     char welcome_msg[MAX_STR_LENGTH] = "You have reached the ";
     char server_name[MAX_STR_LENGTH] = "client-server";
 
-    char host_ip[MAX_STR_LENGTH];
     int hops;
 
-    printf("[Enter the ip of the host]> ");
-    scanf("%s", host_ip);
+//    printf("[Enter the ip of the host]> ");
+//    scanf("%s", host_ip);
 
     while (1) {
-        printf("[Enter the number of hops to traverse]> ");
+        printf("[IP = %s ] [Enter the number of hops to traverse]> ", HOST_IP);
         if (scanf("%d", &hops) != 1) {
             fprintf(stderr, "Invalid input\n");
             return 1;
@@ -58,7 +61,7 @@ int main() {
 
     // you now have the function getaddrinfo() that does all kinds of good stuff for you,
     // including DNS and service name lookups, and fills out the structs you need, besides!
-    getaddrinfo(host_ip, out_server_port, &hints, &res);
+    getaddrinfo(HOST_IP, out_server_port, &hints, &res);
 
     // protocol = 0 (default: TCP)
     out_client_socket = socket(res->ai_family, res->ai_socktype, 0);
@@ -86,13 +89,10 @@ int main() {
 
     /* ----- ACT AS A SERVER --------------------------------------------------- */
 
-    // port of this server
-    char in_server_port[MAX_STR_LENGTH] = "10000";
-
     // create the server socket
     int in_server_socket;
 
-    getaddrinfo(host_ip, in_server_port, &hints, &res);
+    getaddrinfo(HOST_IP, THIS_PORT, &hints, &res);
 
     in_server_socket = socket(res->ai_family, res->ai_socktype, 0);
 
