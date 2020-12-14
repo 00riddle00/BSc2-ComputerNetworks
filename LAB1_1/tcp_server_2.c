@@ -8,7 +8,6 @@
 #include <netinet/in.h>
 
 int main() {
-
     char server_message[256] = "You have reached the server02!";
 
     // create the server socket
@@ -61,5 +60,3 @@ int main() {
 
     return 0;
 }
-
-

@@ -8,7 +8,6 @@
 #include <netinet/in.h>
 
 int main() {
-
     char server_message[256] = "You have reached the server01!";
 
     // create the server socket
@@ -55,9 +54,6 @@ int main() {
     printf("The client's modified message is: %s\n", client_message);
     //close(server_socket);
 
-
-
-
     // create a socket to connect to server2
     int network_socket;
 
@@ -78,9 +74,14 @@ int main() {
     }
 
     char server_response[256];
+
+    // receive data from the server2 (welcome msg)
     recv(network_socket, &server_response, sizeof(server_response), 0);
+
+    // print out the server's response
     printf("The server2 sent the data: %s\n", server_response);
 	
+    // send client's message to the server2
     send(network_socket, client_message, sizeof(client_message), 0);
 
     recv(network_socket, &server_response, sizeof(server_response), 0);
@@ -88,13 +89,9 @@ int main() {
 
     close(network_socket);
 
+    // send modified message from server2 back to the client
     send(client_socket, server_response, sizeof(server_response), 0);
     close(server_socket);
 
-
-
-
     return 0;
 }
-
-

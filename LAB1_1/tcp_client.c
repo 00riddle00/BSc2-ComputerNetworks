@@ -10,7 +10,6 @@
 void waitFor (unsigned int secs);
 
 int main() {
-
     // create a socket
     int network_socket;
 
@@ -63,7 +62,6 @@ int main() {
 
     return 0;
 }
-
 
 void waitFor (unsigned int secs) {
     unsigned int retTime = time(0) + secs;   // Get finishing time.
