@@ -1,11 +1,11 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-# Echo serveris 
+# Echo serveris
 import socket
 import sys
 
-hostas = '127.0.0.1'                                            # Lokalus
-portas = int(input('Įvesk porto numerį (>1024) --> '))          # Bet kuris „tinkamas“ portas  
+hostas = '127.0.0.1'                                    # Lokalus
+portas = int(input('Įvesk porto numerį (>1024) --> '))  # Bet kuris „tinkamas“ portas
 s = None
 for rezultatas in socket.getaddrinfo(hostas, portas, socket.AF_UNSPEC,
                               socket.SOCK_STREAM, 0, socket.AI_PASSIVE):
@@ -30,6 +30,6 @@ jungtis, adresas = s.accept()
 while 1:
     duomenys = jungtis.recv(1024)
     if not duomenys: break
-    did_duomenys = duomenys.upper()   
+    did_duomenys = duomenys.upper()
     jungtis.send(did_duomenys)
 jungtis.close()

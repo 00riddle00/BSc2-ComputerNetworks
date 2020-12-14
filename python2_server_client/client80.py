@@ -4,7 +4,11 @@
 import socket
 import sys
 
-hostas = raw_input('Įvesk adresą --> ')                                     # Kur yra mūsų serveris
+# Naudoti kaip standalone client80.py, tiesiog kreiptis
+# i koki nors egzistuojanti domena/IP.
+
+# pvz. www.google.com, arba IP adresas
+hostas = raw_input('Įvesk adresą --> ') # Kur yra mūsų serveris
 
 portas = 80  # Turi būti tas pats kaip ir serverio
 s = None
@@ -25,9 +29,10 @@ for rezultatas in socket.getaddrinfo(hostas, portas, socket.AF_UNSPEC, socket.SO
 if s is None:
     print('Negaliu atidaryti soketo  :(')
     sys.exit(1)
-print('Įvesk eilutę siuntimui ... --> ')
+print('Įvesk eilutę siuntimui --> '),
 siuntimui = sys.stdin.readline()
 s.sendall(siuntimui)
 gavome = s.recv(1024)
 s.close()
-print 'Gauta ...', repr(gavome)
+# Gausime kazkoki atsaka, pvz 404 Not Found, etc.
+print('Gauta ...', repr(gavome))
