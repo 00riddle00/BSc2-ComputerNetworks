@@ -17,7 +17,6 @@ const char HOST_IP[] = "127.0.0.1";
 const char THIS_PORT[]= "10000";
 
 int main() {
-
     char welcome_msg[MAX_STR_LENGTH] = "You have reached the ";
     char server_name[MAX_STR_LENGTH] = "client-server";
 
@@ -49,7 +48,6 @@ int main() {
 
     hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
     hints.ai_socktype = SOCK_STREAM;
-
 
     /* ----- ACT AS A CLIENT --------------------------------------------------- */
 

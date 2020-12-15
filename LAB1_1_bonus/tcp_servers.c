@@ -21,7 +21,6 @@ const char CLIENT_PORT[]= "10000";
 void send_msg(char* sender_name, char* client_message, char* server_port);
 
 int main() {
-
     /* ----- SETUP ---------*/
 
     // vars which will be params for getaddrinfo()
@@ -63,7 +62,6 @@ int main() {
     // 3rd - sizeof it. We'll leave it at NULL
     // DOES NOT PROCEED FURTHER UNTIL IT GETS A CONNECTION
 
-
     struct sockaddr_storage their_addr;
     socklen_t addr_size;
 
@@ -95,7 +93,6 @@ int main() {
 
     printf("[%s] The client's modified message is: %s\n", server1_name, client1_message);
     close(server1_socket);
-
 
     /* INTERMEDIARY SERVERS ------------------------------------------------------ */
 
